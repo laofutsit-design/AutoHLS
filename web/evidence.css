@@ -1,0 +1,22 @@
+.evidence-page { max-width: 1220px; margin: auto; padding: 28px 28px 60px; }
+.evidence-page nav { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.evidence-page a { color: #215fc4; text-underline-offset: 3px; }
+.evidence-page header { padding: 38px 0 20px; }
+.evidence-page h1 { font-size: clamp(26px, 4vw, 38px); margin: 12px 0; letter-spacing: -.03em; }
+.evidence-page p { line-height: 1.8; }
+.evidence-page select { margin: 0 0 0 12px; max-width: 100%; height: auto; padding: 10px 12px; font: inherit; color: inherit; background: white; border: 1px solid var(--line); border-radius: 6px; }
+.evidence-page h2 { font-size: 18px; margin: 0 0 12px; }
+.evidence-section { padding: 24px; margin: 22px 0; }
+.evidence-notice { padding: 18px 22px; background: #edf3ff; border-left: 3px solid #2a6df5; border-radius: 5px; line-height: 1.8; }
+.evidence-notice.warning { background: #fff5e6; border-color: #b46909; }
+.evidence-note { color: #526077; font-size: 13px; }
+.evidence-mono { font-family: var(--font-mono); font-size: 12px; overflow-wrap: anywhere; }
+.evidence-scroll { overflow-x: auto; }
+.evidence-page table { border-collapse: collapse; width: 100%; font-size: 13px; font-variant-numeric: tabular-nums; }
+.evidence-page th, .evidence-page td { text-align: left; padding: 14px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; font-size: inherit; }
+.evidence-page th { background: var(--surface-2); color: #526077; font-weight: 600; }
+.evidence-page details { border-bottom: 1px solid var(--line); padding: 14px 0; }
+.evidence-page summary { cursor: pointer; font-size: 14px; line-height: 1.8; overflow-wrap: anywhere; }
+.evidence-page details p { margin: 8px 0 0; overflow-wrap: anywhere; font-size: 13px; }
+.evidence-page :focus-visible { outline: 2px solid #2a6df5; outline-offset: 4px; }
+@media (max-width: 600px) { .evidence-page { padding: 20px 14px 40px; } .evidence-section { padding: 18px 14px; } }

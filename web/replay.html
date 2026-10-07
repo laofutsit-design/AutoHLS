@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>32 通道校准回放 · 天枢智构 AutoHLS</title>
+  <link rel="stylesheet" href="/replay.css"><script src="/replay.js" defer></script>
+</head>
+<body>
+<main>
+  <nav><a class="brand" href="/">天枢智构 <span>AutoHLS</span></a><div><a href="/delivery.html">固件交付证据 ↗</a><a id="jsonLink" href="/api/channel-replay?scenario=matched">本场景 JSON ↗</a></div></nav>
+  <header>
+    <p class="eyebrow">APPLICATION LAB / 01</p>
+    <h1>让多通道信号，回到同一把标尺。</h1>
+    <p class="intro">32 通道增益与串扰补偿 · 将一段信号回放映射为 FPGA 矩阵乘任务。</p>
+    <div class="tags"><span>合成数据回放</span><span>非实时采集</span><span>PYNQ-Z2 / Zynq-7020</span><span>预设 Q8 校准系数</span></div>
+  </header>
+  <section class="workflow" aria-label="计算流程">
+    <div><b>01</b><strong>已知真值 + 误差模型</strong><small>增益偏差 / 相邻通道串扰</small></div><span>→</span>
+    <div><b>02</b><strong>32 × 32 矩阵补偿</strong><small>256 个样本 → 8 个矩阵帧</small></div><span>→</span>
+    <div><b>03</b><strong>逐点核对与误差分析</strong><small>软件参考 / 独立实板功能记录</small></div>
+  </section>
+  <div class="toolbar"><label for="scenario">实验条件</label><select id="scenario"><option value="matched">01 · 正常补偿</option><option value="bypass">02 · 关闭补偿</option><option value="drift">03 · 额外偏置（失配）</option></select><button id="refresh" type="button">重读证据</button><span>只读展示，不触发板卡运算</span></div>
+  <p id="status" class="status" role="status" aria-live="polite">正在重新计算并核验本地证据…</p>
+  <div id="content" hidden>
+    <section class="metrics" aria-label="全通道、全样本误差">
+      <article><small>补偿前 RMSE · counts</small><strong id="before">—</strong><span>相对已知合成真值</span></article>
+      <article class="accent"><small>补偿后 RMSE · counts</small><strong id="after">—</strong><span>32 通道 × 256 样本</span></article>
+      <article><small>补偿后最大绝对误差</small><strong id="maxError">—</strong><span>应用阈值：≤ 1 count</span></article>
+      <article><small>应用质量判断</small><strong class="quality" id="quality">—</strong><span>质量达标不等于硬件验证通过</span></article>
+    </section>
+    <section class="panel">
+      <div class="panelhead"><div><p class="eyebrow">SIGNAL REPLAY</p><h2>看见校准前后的差异</h2></div><label>查看通道 <select id="channel" aria-label="查看通道"></select></label></div>
+      <div class="legend"><span class="raw">输入信号</span><span class="target">已知真值</span><span class="corrected">补偿后软件参考</span></div>
+      <svg id="plot" viewBox="0 0 1080 310" role="img" aria-label="所选通道的 256 个样本、真值和补偿后软件参考曲线"></svg>
+      <div class="playback"><button id="play" type="button">播放回放</button><button id="rewind" type="button">归零</button><input id="cursor" type="range" min="0" max="255" value="0" aria-label="回放样本位置"><output id="sample">样本 0 / 255</output></div>
+      <p class="muted">回放速度仅用于观察，不是采样率或 FPGA 吞吐率。曲线为软件参考值；若有实板记录，只表示相同输入已逐点通过验证。</p>
+    </section>
+    <section class="details">
+      <article class="panel"><p class="eyebrow">AT THIS SAMPLE</p><h2>32 通道残差</h2><div id="channels" class="channelgrid"></div><p class="muted">当前样本：补偿值 − 已知真值（counts）。绿色在 ±1 以内，橙色为超出阈值；下拉选择通道可查看完整波形。</p></article>
+      <article class="panel explanation"><p class="eyebrow">WHAT THIS PROVES</p><h2 id="scenarioTitle"></h2><p id="explanation"></p><div class="equation">Y<sub>Q8</sub> = X × W<sub>Q8</sub><br><small>Y = Y<sub>Q8</sub> / 256</small></div><p id="coefficients"></p><p class="muted">参数由已知误差模型手工设定，不是大模型学习得到。额外偏置不会被这个线性模型自动修复。</p></article>
+    </section>
+    <section class="panel evidence"><p class="eyebrow">EVIDENCE, NOT A CLAIM</p><h2 id="boardState">本应用尚未上板验证</h2><p id="boardDetail"></p><dl><dt>本场景输入 SHA-256</dt><dd id="inputHash"></dd><dt>软件证据清单 SHA-256</dt><dd id="manifestHash"></dd><dt>绑定的固件 SHA-256</dt><dd id="bitHash">尚无本应用实板记录</dd></dl><p class="muted">没有本应用 CPU 对照，故不展示加速比。单次功能检查不是稳健性能实验；哈希用于检测版本混用，不是数字签名。</p></section>
+  </div>
+  <footer>天枢智构 AutoHLS · 将已验收的矩阵乘核心映射到具体应用。传感器采集、自动系数辨识与实时闭环控制不在本演示范围内。</footer>
+</main>
+</body></html>

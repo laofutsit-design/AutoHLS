@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>候选到固件 · AutoHLS</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/evidence.css">
+  <script src="/delivery.js" defer></script>
+</head>
+<body>
+<main class="evidence-page">
+  <nav><a href="/evidence.html?suite=coverage42">← 搜索实验与对照</a><a href="/replay.html">32 通道应用演示 →</a><a href="/api/delivery">交付证据 JSON</a></nav>
+  <header>
+    <p class="eyebrow">AUTOHLS / VERIFIED DELIVERY</p>
+    <h1>从搜索候选到可验收固件</h1>
+    <p>同一份源码贯通搜索、独立 RTL、包装与布线。板测是单独的验收阶段。</p>
+  </header>
+  <button id="refreshDelivery" type="button">重新读取本地证据</button>
+  <p id="deliveryStatus" class="evidence-notice" role="status" aria-live="polite">正在校验交付记录…</p>
+  <div id="deliveryContent" hidden>
+    <section class="panel evidence-section">
+      <h2>交付阶段</h2>
+      <ol id="deliveryStages"></ol>
+      <p class="evidence-note">此页只读：刷新不会启动综合、重跑任务或访问板卡。远程进度为有时间戳的采集快照，并非实时连接；完整下载、摘要校验和离线验收后才标为构建通过。</p>
+    </section>
+    <section class="panel evidence-section">
+      <h2>固定输入与结果边界</h2>
+      <p id="deliveryIdentity" class="evidence-mono"></p>
+      <p id="deliveryMetric"></p>
+      <p id="deliveryHash" class="evidence-mono"></p>
+      <p id="firmwareHash" class="evidence-mono"></p>
+      <p class="evidence-note">PYNQ-Z2 · 32×32 矩阵乘 · 输入 [-1000,1000] · int16 乘法 / int32 累加 · DDR int32 · 一次启动 1–64 组 · 100 MHz。批处理包装来自确定性模板，不是大模型自动发明的架构。</p>
+      <p class="evidence-note">选用预先固定的首个覆盖有反馈运行，不跨组挑成绩。该候选与历史硬件批处理核心源码一致；本页不把旧板测成绩当作新固件结果，也不声称模型优于匹配随机。</p>
+    </section>
+    <section class="panel evidence-section">
+      <h2>本次实板功能验收</h2>
+      <div id="boardAcceptance" hidden>
+        <p id="boardChecks"></p>
+        <p id="boardEndState"></p>
+        <p id="boardReceipt" class="evidence-mono"></p>
+        <p id="boardArchive" class="evidence-mono"></p>
+        <p class="evidence-note">PYNQ-Z2：batch=1/2/3/4/16/63/64，分别验证缓存与非缓存，每条件仅两次启动；不是性能对照。未测同批 CPU 加速比。新 bit 的有效载荷与历史架构相同，本次补齐来源绑定与独立功能验证，不声称架构或模型收益。</p>
+        <p class="evidence-note">已校验新 Overlay 的下载跟踪及暂存固件摘要，不是 FPGA 配置物理回读。刷新仅重审本地包、输入摘要及原始结果，不触发板卡运算。</p>
+      </div>
+    </section>
+    <section class="panel evidence-section">
+      <h2>已锁定的候选源代码</h2>
+      <pre id="deliverySource" style="overflow:auto;line-height:1.6"></pre>
+    </section>
+    <section class="panel evidence-section">
+      <h2>最近一次云端观察</h2>
+      <p id="observationTime" class="evidence-note"></p>
+      <pre id="deliveryObservation" style="overflow:auto;white-space:pre-wrap"></pre>
+    </section>
+  </div>
+</main>
+</body>
+</html>

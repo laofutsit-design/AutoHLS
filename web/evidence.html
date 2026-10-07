@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>真实模型对照 · AutoHLS</title>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/evidence.css">
+  <script src="/evidence.js" defer></script>
+</head>
+<body>
+  <main class="evidence-page">
+    <nav><a href="/">← 返回演示工作台</a><a href="/delivery.html">候选到固件</a><a id="auditLink" href="/api/model-suite">查看审计 JSON</a></nav>
+    <header>
+      <p class="eyebrow">AUTOHLS / MEASURED SEARCH EVIDENCE</p>
+      <h1>模型搜索，是否值得？</h1>
+      <p>同一预算、同一内核、同一工具链。保留失败，比较结果，也比较搜索成本。</p>
+    </header>
+    <label for="suiteSelect">实验批次</label>
+    <select id="suiteSelect" aria-describedby="suiteCaveat">
+      <option value="budget8">预算 8 · 原版诊断</option>
+      <option value="budget16">预算 16 · 修复版诊断</option>
+      <option value="order39">预算 8 · 候选排列匹配（39组）</option>
+      <option value="coverage42">预算 8 · 覆盖调度匹配（42组）</option>
+      <option value="prefixsum14">预算 8 · 前缀和前瞻迁移（14组）</option>
+    </select>
+    <p id="suiteCaveat" class="evidence-note">原预算8/16两批的失败诊断实现不同，不能把跨批次差异全部归因于预算。39组排列、42组覆盖与14组前缀和迁移各为独立批次，不能混合条件或把旧批次当作匹配控制。</p>
+    <p id="suiteStatus" class="evidence-notice" role="status" aria-live="polite">正在读取已归档审计结果…</p>
+    <div id="suiteContent" hidden>
+      <section class="panel evidence-section" aria-labelledby="protocolHeading">
+        <h2 id="protocolHeading">固定实验协议</h2>
+        <p id="protocolText"></p>
+        <p id="modelText" class="evidence-mono"></p>
+        <p id="orderText" class="evidence-note" hidden>本批15个条件组、39次搜索。A保持原顺序；B仅同步重排提示中的剩余候选和输出枚举，每步使用固定基础种子加评估序号。排列种子与模型生成seed不同；没有改变候选空间。三个内核均为开发集。</p>
+        <p id="coverageText" class="evidence-note" hidden></p>
+        <p id="taskScopeText" class="evidence-note" hidden></p>
+        <p id="referenceText" class="evidence-note"></p>
+      </section>
+      <section id="orderComparison" class="panel evidence-section" aria-labelledby="orderHeading" hidden>
+        <h2 id="orderHeading">候选重排：同条件 A/B 对照</h2>
+        <p class="evidence-note">A为原顺序，B为固定种子重排；只比较同内核、同反馈模式。整批审计通过且两侧全部预定重复均完成、有可行结果时，才计算(B/A−1)的时延变化；缺失或分母不一致显示“—”。负值表示B的HLS估计更低，不表示板级加速或统计显著性。RTL筛选与失败回退在逐组详情中单列。</p>
+        <div class="evidence-scroll" role="region" aria-label="候选顺序匹配对照表，可横向滚动" tabindex="0">
+          <table>
+            <thead><tr><th scope="col">内核</th><th scope="col">反馈</th><th scope="col">A完成 / 计划</th><th scope="col">B完成 / 计划</th><th scope="col">HLS中位数 A → B μs</th><th scope="col">B较A时延变化</th><th scope="col">搜索耗时中位数 A → B s</th></tr></thead>
+            <tbody id="orderRows"></tbody>
+          </table>
+        </div>
+      </section>
+      <section id="coverageComparison" class="panel evidence-section" aria-labelledby="coverageHeading" hidden>
+        <h2 id="coverageHeading">覆盖调度与模型增量：四项预定对照</h2>
+        <p class="evidence-note">A→B依次为：无覆盖随机→覆盖随机；覆盖随机→覆盖无反馈模型；覆盖随机→覆盖有反馈模型；覆盖无反馈模型→覆盖有反馈模型。比较同内核的组中位数，整批审计通过且两侧全部预定运行完成、有可行结果才显示(B/A−1)；缺失或分母不一致显示“—”。没有无覆盖模型条件，不能估计覆盖对模型本身的因果改善。</p>
+        <p class="evidence-note">负值仅表示B的HLS估计时延更低，不是RTL实测、板级加速或统计显著性。原HLS最佳与RTL拒绝回退在逐组详情中分开保留。</p>
+        <div class="evidence-scroll" role="region" aria-label="覆盖调度匹配对照表，可横向滚动" tabindex="0">
+          <table>
+            <thead><tr><th scope="col">内核</th><th scope="col">比较（A→B）</th><th scope="col">A完成 / 计划</th><th scope="col">B完成 / 计划</th><th scope="col">HLS中位数 A → B μs</th><th scope="col">B较A时延变化</th><th scope="col">搜索耗时中位数 A → B s</th></tr></thead>
+            <tbody id="coverageRows"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel evidence-section" aria-labelledby="groupHeading">
+        <h2 id="groupHeading">同预算结果</h2>
+        <p class="evidence-note">时延为 HLS 估计，越低越好；不是板卡计时。中位数仅用完成预算且有可行结果的组，缺失或失败数量不隐去。不同内核不混算微秒平均值。</p>
+        <div class="evidence-scroll" role="region" aria-label="分组对照表，可横向滚动" tabindex="0">
+          <table>
+            <thead><tr><th scope="col">内核</th><th scope="col">搜索方式</th><th scope="col">完成 / 计划</th><th scope="col">时延中位数 μs</th><th scope="col">最差 μs</th><th scope="col">命中参考</th><th scope="col">总耗时中位数 s</th><th scope="col">重复序列</th></tr></thead>
+            <tbody id="groupRows"></tbody>
+          </table>
+        </div>
+      </section>
+      <section class="panel evidence-section" aria-labelledby="runHeading">
+        <h2 id="runHeading">每一次运行，包括失败</h2>
+        <p class="evidence-note">展开可见候选顺序、模型成本、资源和错误。失败方案不会因估计时延低而被当作可交付硬件。</p>
+        <div id="runDetails"></div>
+      </section>
+      <aside class="evidence-notice">
+        <strong>验证边界</strong>
+        <p>搜索可行性沿用 10 ns 目标；HLS 的 8.75 ns 有效预算警告保留。HLS 估计、RTL 协同仿真、布线时序与实板测试是不同证据层级。此页没有新板级测量，也不提供功耗结论。</p>
+        <p id="rtlStatus">新一轮 RTL 验收未在此报告中确认。</p>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

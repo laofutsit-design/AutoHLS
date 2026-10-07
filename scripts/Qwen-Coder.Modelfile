@@ -1,0 +1,2 @@
+FROM /mnt/datadisk0/autohls/models/qwen2.5-coder-7b-q4km/qwen2.5-coder-7b-instruct-q4_k_m.gguf
+SYSTEM You are Qwen, created by Alibaba Cloud. You are a helpful assistant.
